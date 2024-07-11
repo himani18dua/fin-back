@@ -1,21 +1,30 @@
-from flask import Flask, request, jsonify, send_file
-from flask_cors import CORS, cross_origin
+from flask import Flask, request, jsonify, send_file, make_response
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import json
 import os
 from scrapy.crawler import CrawlerProcess
-
-# Import your Scrapy spiders here
 from myproject.myproject.spiders.crawler import FindBrokenSpider
 from myproject.myproject.spiders.imgcrawler import FindImagesWithoutAltSpider
 from scrapy.utils.project import get_project_settings
 
 app = Flask(__name__)
 
-CORS(app, resources={r"/*": {"origins": "https://frontend-react-wc.vercel.app//"}})
+# CORS Headers
+def add_cors_headers(response):
+    # Replace * with the domain your frontend is hosted on, or '*' for any domain
+    response.headers['Access-Control-Allow-Origin'] = 'https://frontend-react-wc.vercel.app'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+    response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
+    return response
+
+# Register CORS handling for all routes
+@app.after_request
+def after_request(response):
+    response = add_cors_headers(response)
+    return response
+
 @app.route('/crawl', methods=['POST'])
-@cross_origin()
 def crawl():
     try:
         data = request.get_json()
@@ -30,13 +39,11 @@ def crawl():
         process.crawl(FindBrokenSpider, url=url)
         process.start()
 
-
         return jsonify({"message": "Crawling started"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @app.route('/img-crawl', methods=['POST'])
-@cross_origin()
 def imgcrawl():
     try:
         data = request.get_json()
@@ -46,8 +53,6 @@ def imgcrawl():
             return jsonify({"error": "URL is required"}), 400
 
         # Run the Scrapy spider programmatically
-        print(url)
-       
         process = CrawlerProcess(get_project_settings())
         process.crawl(FindImagesWithoutAltSpider, url=url)
         process.start()
@@ -55,30 +60,22 @@ def imgcrawl():
         return jsonify({"message": "Crawling started"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 @app.route('/img-members', methods=['GET'])
-@cross_origin()
 def img_members():
     file_path = os.path.join('output_directory', 'images_without_alt.json')
     with open(file_path, 'r') as f:
         images_without_alt = json.load(f)
     return jsonify(images_without_alt)
 
-    
 @app.route("/members", methods=['GET'])
-@cross_origin()
 def members():
-    
-    print('hello')
     file_path = os.path.join('output_directory', 'broken_links.json')
-    print(file_path)
-
     with open(file_path, 'r') as f:
         broken_links = json.load(f)
-
-    return broken_links
+    return jsonify(broken_links)
 
 @app.route('/download')
-@cross_origin()
 def download_file():
     json_path = 'output_directory/broken_links.json'
     pdf_path = 'output_directory/broken_links.pdf'
@@ -108,7 +105,6 @@ def download_file():
     return send_file(pdf_path, as_attachment=True)
 
 @app.route('/img-download')
-@cross_origin()
 def download_images_file():
     json_path = 'output_directory/images_without_alt.json'
     pdf_path = 'output_directory/images_without_alt.pdf'
