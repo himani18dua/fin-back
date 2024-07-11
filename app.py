@@ -5,20 +5,26 @@ from reportlab.pdfgen import canvas
 import json
 import os
 from scrapy.crawler import CrawlerProcess
-
-# Import your Scrapy spiders here
 from myproject.myproject.spiders.crawler import FindBrokenSpider
 from myproject.myproject.spiders.imgcrawler import FindImagesWithoutAltSpider
 from scrapy.utils.project import get_project_settings
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "https://frontend-react-wc.vercel.app"}})
+
+# Function to get Scrapy project settings with custom USER_AGENT
+def get_project_settings():
+    custom_settings = {
+        'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        # Add other Scrapy settings as needed
+    }
+    return get_project_settings(custom_settings)
+
 @app.route('/crawl', methods=['POST'])
 def crawl():
     try:
         data = request.get_json()
         url = data.get('url')
-        print(url)
 
         if not url:
             return jsonify({"error": "URL is required"}), 400
@@ -27,7 +33,6 @@ def crawl():
         process = CrawlerProcess(get_project_settings())
         process.crawl(FindBrokenSpider, url=url)
         process.start()
-
 
         return jsonify({"message": "Crawling started"}), 200
     except Exception as e:
@@ -43,8 +48,6 @@ def imgcrawl():
             return jsonify({"error": "URL is required"}), 400
 
         # Run the Scrapy spider programmatically
-        print(url)
-       
         process = CrawlerProcess(get_project_settings())
         process.crawl(FindImagesWithoutAltSpider, url=url)
         process.start()
@@ -52,6 +55,7 @@ def imgcrawl():
         return jsonify({"message": "Crawling started"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 @app.route('/img-members', methods=['GET'])
 def img_members():
     file_path = os.path.join('output_directory', 'images_without_alt.json')
@@ -59,19 +63,12 @@ def img_members():
         images_without_alt = json.load(f)
     return jsonify(images_without_alt)
 
-    
 @app.route("/members", methods=['GET'])
-
 def members():
-    
-    print('hello')
     file_path = os.path.join('output_directory', 'broken_links.json')
-    print(file_path)
-
     with open(file_path, 'r') as f:
         broken_links = json.load(f)
-
-    return broken_links
+    return jsonify(broken_links)
 
 @app.route('/download')
 def download_file():
