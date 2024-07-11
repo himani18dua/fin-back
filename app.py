@@ -12,9 +12,19 @@ from myproject.myproject.spiders.imgcrawler import FindImagesWithoutAltSpider
 from scrapy.utils.project import get_project_settings
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": ""}})
-@app.route('/crawl', methods=['POST'])
+CORS(app, resources={r"/*": {"origins": "*"}})  # Allow CORS for all origins
+
+@app.route('/crawl', methods=['POST', 'OPTIONS'])
 def crawl():
+    if request.method == 'OPTIONS':
+        # Handle CORS preflight request
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+        }
+        return ('', 204, headers)
+
     try:
         data = request.get_json()
         url = data.get('url')
@@ -28,13 +38,21 @@ def crawl():
         process.crawl(FindBrokenSpider, url=url)
         process.start()
 
-
         return jsonify({"message": "Crawling started"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/img-crawl', methods=['POST'])
+@app.route('/img-crawl', methods=['POST', 'OPTIONS'])
 def imgcrawl():
+    if request.method == 'OPTIONS':
+        # Handle CORS preflight request
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+        }
+        return ('', 204, headers)
+
     try:
         data = request.get_json()
         url = data.get('url')
@@ -52,84 +70,122 @@ def imgcrawl():
         return jsonify({"message": "Crawling started"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-@app.route('/img-members', methods=['GET'])
+
+@app.route('/img-members', methods=['GET', 'OPTIONS'])
 def img_members():
-    file_path = os.path.join('output_directory', 'images_without_alt.json')
-    with open(file_path, 'r') as f:
-        images_without_alt = json.load(f)
-    return jsonify(images_without_alt)
+    if request.method == 'OPTIONS':
+        # Handle CORS preflight request
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        }
+        return ('', 204, headers)
 
-    
-@app.route("/members", methods=['GET'])
+    try:
+        file_path = os.path.join('output_directory', 'images_without_alt.json')
+        with open(file_path, 'r') as f:
+            images_without_alt = json.load(f)
+        return jsonify(images_without_alt)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
+@app.route("/members", methods=['GET', 'OPTIONS'])
 def members():
-    
-    print('hello')
-    file_path = os.path.join('output_directory', 'broken_links.json')
-    print(file_path)
+    if request.method == 'OPTIONS':
+        # Handle CORS preflight request
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        }
+        return ('', 204, headers)
 
-    with open(file_path, 'r') as f:
-        broken_links = json.load(f)
+    try:
+        file_path = os.path.join('output_directory', 'broken_links.json')
+        with open(file_path, 'r') as f:
+            broken_links = json.load(f)
+        return jsonify(broken_links)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    return broken_links
-
-@app.route('/download')
+@app.route('/download', methods=['GET', 'OPTIONS'])
 def download_file():
-    json_path = 'output_directory/broken_links.json'
-    pdf_path = 'output_directory/broken_links.pdf'
+    if request.method == 'OPTIONS':
+        # Handle CORS preflight request
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        }
+        return ('', 204, headers)
 
-    # Load JSON data
-    with open(json_path, 'r') as f:
-        data = json.load(f)
+    try:
+        json_path = 'output_directory/broken_links.json'
+        pdf_path = 'output_directory/broken_links.pdf'
 
-    # Create a PDF
-    c = canvas.Canvas(pdf_path, pagesize=letter)
-    width, height = letter
-    text = c.beginText(40, height - 40)
-    text.setFont("Helvetica", 10)
+        # Load JSON data
+        with open(json_path, 'r') as f:
+            data = json.load(f)
 
-    # Convert JSON data to text
-    json_str = json.dumps(data, indent=4)
-    lines = json_str.split('\n')
+        # Create a PDF
+        c = canvas.Canvas(pdf_path, pagesize=letter)
+        width, height = letter
+        text = c.beginText(40, height - 40)
+        text.setFont("Helvetica", 10)
 
-    # Add text to PDF
-    for line in lines:
-        text.textLine(line)
+        # Convert JSON data to text
+        json_str = json.dumps(data, indent=4)
+        lines = json_str.split('\n')
 
-    c.drawText(text)
-    c.save()
+        # Add text to PDF
+        for line in lines:
+            text.textLine(line)
 
-    # Send the PDF file as a response
-    return send_file(pdf_path, as_attachment=True)
+        c.drawText(text)
+        c.save()
 
-@app.route('/img-download')
+        # Send the PDF file as a response
+        return send_file(pdf_path, as_attachment=True)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/img-download', methods=['GET', 'OPTIONS'])
 def download_images_file():
-    json_path = 'output_directory/images_without_alt.json'
-    pdf_path = 'output_directory/images_without_alt.pdf'
+    if request.method == 'OPTIONS':
+        # Handle CORS preflight request
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        }
+        return ('', 204, headers)
 
-    # Load JSON data
-    with open(json_path, 'r') as f:
-        data = json.load(f)
+    try:
+        json_path = 'output_directory/images_without_alt.json'
+        pdf_path = 'output_directory/images_without_alt.pdf'
 
-    # Create a PDF
-    c = canvas.Canvas(pdf_path, pagesize=letter)
-    width, height = letter
-    text = c.beginText(40, height - 40)
-    text.setFont("Helvetica", 10)
+        # Load JSON data
+        with open(json_path, 'r') as f:
+            data = json.load(f)
 
-    # Convert JSON data to text
-    json_str = json.dumps(data, indent=4)
-    lines = json_str.split('\n')
+        # Create a PDF
+        c = canvas.Canvas(pdf_path, pagesize=letter)
+        width, height = letter
+        text = c.beginText(40, height - 40)
+        text.setFont("Helvetica", 10)
 
-    # Add text to PDF
-    for line in lines:
-        text.textLine(line)
+        # Convert JSON data to text
+        json_str = json.dumps(data, indent=4)
+        lines = json_str.split('\n')
 
-    c.drawText(text)
-    c.save()
+        # Add text to PDF
+        for line in lines:
+            text.textLine(line)
 
-    # Send the PDF file as a response
-    return send_file(pdf_path, as_attachment=True)
+        c.drawText(text)
+        c.save()
+
+        # Send the PDF file as a response
+        return send_file(pdf_path, as_attachment=True)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
