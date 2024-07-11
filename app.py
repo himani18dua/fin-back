@@ -14,6 +14,7 @@ from scrapy.utils.project import get_project_settings
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ""}})
 @app.route('/crawl', methods=['POST'])
+@cross_origin()
 def crawl():
     try:
         data = request.get_json()
@@ -34,6 +35,7 @@ def crawl():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/img-crawl', methods=['POST'])
+@cross_origin()
 def imgcrawl():
     try:
         data = request.get_json()
@@ -53,6 +55,7 @@ def imgcrawl():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 @app.route('/img-members', methods=['GET'])
+@cross_origin()
 def img_members():
     file_path = os.path.join('output_directory', 'images_without_alt.json')
     with open(file_path, 'r') as f:
@@ -61,7 +64,7 @@ def img_members():
 
     
 @app.route("/members", methods=['GET'])
-
+@cross_origin()
 def members():
     
     print('hello')
@@ -74,6 +77,7 @@ def members():
     return broken_links
 
 @app.route('/download')
+@cross_origin()
 def download_file():
     json_path = 'output_directory/broken_links.json'
     pdf_path = 'output_directory/broken_links.pdf'
@@ -103,6 +107,7 @@ def download_file():
     return send_file(pdf_path, as_attachment=True)
 
 @app.route('/img-download')
+@cross_origin()
 def download_images_file():
     json_path = 'output_directory/images_without_alt.json'
     pdf_path = 'output_directory/images_without_alt.pdf'
