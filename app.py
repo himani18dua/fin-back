@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file, make_response
+from flask import Flask, request, jsonify, send_file
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import json
@@ -12,10 +12,10 @@ app = Flask(__name__)
 
 # CORS Headers
 def add_cors_headers(response):
-    # Replace * with the domain your frontend is hosted on, or '*' for any domain
     response.headers['Access-Control-Allow-Origin'] = 'https://frontend-react-wc.vercel.app'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
     response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'  # if you need credentials (cookies, authorization headers)
     return response
 
 # Register CORS handling for all routes
