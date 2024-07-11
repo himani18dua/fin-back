@@ -12,7 +12,8 @@ from myproject.myproject.spiders.imgcrawler import FindImagesWithoutAltSpider
 from scrapy.utils.project import get_project_settings
 
 app = Flask(__name__)
-CORS(app)
+
+CORS(app, resources={r"/*": {"origins": "https://frontend-react-wc.vercel.app"}})
 @app.route('/crawl', methods=['POST'])
 @cross_origin()
 def crawl():
