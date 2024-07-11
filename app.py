@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, send_file
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import json
@@ -12,7 +12,7 @@ from myproject.myproject.spiders.imgcrawler import FindImagesWithoutAltSpider
 from scrapy.utils.project import get_project_settings
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": ""}})
+CORS(app)
 @app.route('/crawl', methods=['POST'])
 @cross_origin()
 def crawl():
