@@ -12,7 +12,7 @@ from myproject.myproject.spiders.imgcrawler import FindImagesWithoutAltSpider
 from scrapy.utils.project import get_project_settings
 
 app = Flask(__name__)
-CORS(app, resources={r"/crawl": {"origins": "https://web-crawler-site.netlify.app"}})
+CORS(app, resources={r"/*": {"origins": ""}})
 @app.route('/crawl', methods=['POST'])
 def crawl():
     try:
