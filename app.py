@@ -1,29 +1,18 @@
 from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import json
 import os
 from scrapy.crawler import CrawlerProcess
+
+# Import your Scrapy spiders here
 from myproject.myproject.spiders.crawler import FindBrokenSpider
 from myproject.myproject.spiders.imgcrawler import FindImagesWithoutAltSpider
 from scrapy.utils.project import get_project_settings
 
 app = Flask(__name__)
-
-# CORS Headers
-def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = 'https://frontend-react-wc.vercel.app'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-    response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
-    response.headers['Access-Control-Allow-Credentials'] = 'true'  # if you need credentials (cookies, authorization headers)
-    return response
-
-# Register CORS handling for all routes
-@app.after_request
-def after_request(response):
-    response = add_cors_headers(response)
-    return response
-
+CORS(app)
 @app.route('/crawl', methods=['POST'])
 def crawl():
     try:
@@ -39,6 +28,7 @@ def crawl():
         process.crawl(FindBrokenSpider, url=url)
         process.start()
 
+
         return jsonify({"message": "Crawling started"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -53,6 +43,8 @@ def imgcrawl():
             return jsonify({"error": "URL is required"}), 400
 
         # Run the Scrapy spider programmatically
+        print(url)
+       
         process = CrawlerProcess(get_project_settings())
         process.crawl(FindImagesWithoutAltSpider, url=url)
         process.start()
@@ -60,7 +52,6 @@ def imgcrawl():
         return jsonify({"message": "Crawling started"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 @app.route('/img-members', methods=['GET'])
 def img_members():
     file_path = os.path.join('output_directory', 'images_without_alt.json')
@@ -68,12 +59,19 @@ def img_members():
         images_without_alt = json.load(f)
     return jsonify(images_without_alt)
 
+    
 @app.route("/members", methods=['GET'])
+
 def members():
+    
+    print('hello')
     file_path = os.path.join('output_directory', 'broken_links.json')
+    print(file_path)
+
     with open(file_path, 'r') as f:
         broken_links = json.load(f)
-    return jsonify(broken_links)
+
+    return broken_links
 
 @app.route('/download')
 def download_file():
