@@ -1,0 +1,70 @@
+[
+    {
+        "source_page": "https://www.scrapebay.com/",
+        "image_url": "https://www.scrapebay.com/static/images/favicon.png"
+    },
+    {
+        "source_page": "https://www.scrapebay.com/email/",
+        "image_url": "https://www.scrapebay.com/static/images/favicon.png"
+    },
+    {
+        "source_page": "https://www.scrapebay.com/email/",
+        "image_url": "https://www.scrapebay.com/static/images/not_real_person/1.jpg"
+    },
+    {
+        "source_page": "https://www.scrapebay.com/email/",
+        "image_url": "https://www.scrapebay.com/static/images/not_real_person/2.jpg"
+    },
+    {
+        "source_page": "https://www.scrapebay.com/email/",
+        "image_url": "https://www.scrapebay.com/static/images/not_real_person/3.jpg"
+    },
+    {
+        "source_page": "https://www.scrapebay.com/email/",
+        "image_url": "https://www.scrapebay.com/static/images/not_real_person/4.jpg"
+    },
+    {
+        "source_page": "https://www.scrapebay.com/email/",
+        "image_url": "https://www.scrapebay.com/static/images/not_real_person/5.jpg"
+    },
+    {
+        "source_page": "https://www.scrapebay.com/broken/broken_404",
+        "image_url": "https://www.scrapebay.com/static/images/favicon.png"
+    },
+    {
+        "source_page": "https://www.scrapebay.com/broken/broken_disabled",
+        "image_url": "https://www.scrapebay.com/static/images/favicon.png"
+    },
+    {
+        "source_page": "https://www.scrapebay.com/ebooks",
+        "image_url": "https://www.scrapebay.com/static/images/favicon.png"
+    },
+    {
+        "source_page": "https://www.scrapebay.com/blog/1",
+        "image_url": "https://www.scrapebay.com/static/images/favicon.png"
+    },
+    {
+        "source_page": "https://www.scrapebay.com/data_tables/",
+        "image_url": "https://www.scrapebay.com/static/images/favicon.png"
+    },
+    {
+        "source_page": "https://www.scrapebay.com/tables/",
+        "image_url": "https://www.scrapebay.com/static/images/favicon.png"
+    },
+    {
+        "source_page": "https://www.scrapebay.com/selectors/practice",
+        "image_url": "https://www.scrapebay.com/static/images/favicon.png"
+    },
+    {
+        "source_page": "https://www.scrapebay.com/do_not_scrape/",
+        "image_url": "https://www.scrapebay.com/static/images/favicon.png"
+    },
+    {
+        "source_page": "https://www.scrapebay.com/blog/2",
+        "image_url": "https://www.scrapebay.com/static/images/favicon.png"
+    },
+    {
+        "source_page": "https://www.scrapebay.com/blog/3",
+        "image_url": "https://www.scrapebay.com/static/images/favicon.png"
+    }
+]

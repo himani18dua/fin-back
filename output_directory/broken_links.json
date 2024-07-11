@@ -1,0 +1,93 @@
+[
+    {
+        "Source_Page": "https://www.scrapebay.com/broken/broken_404",
+        "Link_Text": "Link 14",
+        "Broken_Page_Link": "https://www.sdf.com/page14",
+        "HTTP_Code": 404,
+        "External": true
+    },
+    {
+        "Source_Page": "https://www.scrapebay.com/broken/broken_404",
+        "Link_Text": "Link 4",
+        "Broken_Page_Link": "https://www.sdf.com/page4",
+        "HTTP_Code": 404,
+        "External": true
+    },
+    {
+        "Source_Page": "https://www.scrapebay.com/broken/broken_404",
+        "Link_Text": "Link 3",
+        "Broken_Page_Link": "https://www.sdf.com/page3",
+        "HTTP_Code": 404,
+        "External": true
+    },
+    {
+        "Source_Page": "https://www.scrapebay.com/broken/broken_404",
+        "Link_Text": "Link 13",
+        "Broken_Page_Link": "https://www.example.com/page13",
+        "HTTP_Code": 404,
+        "External": true
+    },
+    {
+        "Source_Page": "https://www.scrapebay.com/broken/broken_404",
+        "Link_Text": "Link 10",
+        "Broken_Page_Link": "https://www.example.com/page10",
+        "HTTP_Code": 404,
+        "External": true
+    },
+    {
+        "Source_Page": "https://www.scrapebay.com/broken/broken_404",
+        "Link_Text": "Link 9",
+        "Broken_Page_Link": "https://www.example.com/page9",
+        "HTTP_Code": 404,
+        "External": true
+    },
+    {
+        "Source_Page": "https://www.scrapebay.com/broken/broken_404",
+        "Link_Text": "Link 1",
+        "Broken_Page_Link": "https://www.example.com/page1",
+        "HTTP_Code": 404,
+        "External": true
+    },
+    {
+        "Source_Page": "https://www.scrapebay.com/broken/broken_404",
+        "Link_Text": "Link 7",
+        "Broken_Page_Link": "https://www.example.com/page7",
+        "HTTP_Code": 404,
+        "External": true
+    },
+    {
+        "Source_Page": "https://www.scrapebay.com/broken/broken_404",
+        "Link_Text": "Link 11",
+        "Broken_Page_Link": "https://www.example.com/page11",
+        "HTTP_Code": 404,
+        "External": true
+    },
+    {
+        "Source_Page": "https://www.scrapebay.com/broken/broken_404",
+        "Link_Text": "Link 19",
+        "Broken_Page_Link": "https://www.example.com/page19",
+        "HTTP_Code": 404,
+        "External": true
+    },
+    {
+        "Source_Page": "https://www.scrapebay.com/broken/broken_404",
+        "Link_Text": "Link 16",
+        "Broken_Page_Link": "https://www.example.com/page16",
+        "HTTP_Code": 404,
+        "External": true
+    },
+    {
+        "Source_Page": "https://www.scrapebay.com/broken/broken_404",
+        "Link_Text": "Link 20",
+        "Broken_Page_Link": "https://www.sdf.com/page20",
+        "HTTP_Code": 404,
+        "External": true
+    },
+    {
+        "Source_Page": "https://www.scrapebay.com/broken/broken_404",
+        "Link_Text": "Link 17",
+        "Broken_Page_Link": "https://www.example.com/page17",
+        "HTTP_Code": 500,
+        "External": true
+    }
+]
