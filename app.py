@@ -5,20 +5,18 @@ from reportlab.pdfgen import canvas
 import json
 import os
 from scrapy.crawler import CrawlerProcess
-
-# Import your Scrapy spiders here
 from myproject.myproject.spiders.crawler import FindBrokenSpider
 from myproject.myproject.spiders.imgcrawler import FindImagesWithoutAltSpider
 from scrapy.utils.project import get_project_settings
 
 app = Flask(__name__)
 CORS(app, origins=["https://frontend-react-wc.vercel.app"])  # Allow only specific origin
+
 @app.route('/crawl', methods=['POST'])
 def crawl():
     try:
         data = request.get_json()
         url = data.get('url')
-        print(url)
 
         if not url:
             return jsonify({"error": "URL is required"}), 400
@@ -28,8 +26,8 @@ def crawl():
         process.crawl(FindBrokenSpider, url=url)
         process.start()
 
-
         return jsonify({"message": "Crawling started"}), 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -43,35 +41,46 @@ def imgcrawl():
             return jsonify({"error": "URL is required"}), 400
 
         # Run the Scrapy spider programmatically
-        print(url)
-       
         process = CrawlerProcess(get_project_settings())
         process.crawl(FindImagesWithoutAltSpider, url=url)
         process.start()
 
         return jsonify({"message": "Crawling started"}), 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 @app.route('/img-members', methods=['GET'])
 def img_members():
-    file_path = os.path.join('output_directory', 'images_without_alt.json')
-    with open(file_path, 'r') as f:
-        images_without_alt = json.load(f)
-    return jsonify(images_without_alt)
+    try:
+        file_path = os.path.join('output_directory', 'images_without_alt.json')
 
-    
+        with open(file_path, 'r') as f:
+            images_without_alt = json.load(f)
+
+        # Limiting to 5 items
+        limited_images_without_alt = images_without_alt[:5]
+
+        return jsonify(limited_images_without_alt), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route("/members", methods=['GET'])
-
 def members():
-    
-    print('hello')
-    file_path = os.path.join('output_directory', 'broken_links.json')
-    print(file_path)
+    try:
+        file_path = os.path.join('output_directory', 'broken_links.json')
 
-    with open(file_path, 'r') as f:
-        broken_links = json.load(f)
+        with open(file_path, 'r') as f:
+            broken_links = json.load(f)
 
-    return broken_links
+        # Limiting to 5 items
+        limited_broken_links = broken_links[:5]
+
+        return jsonify(limited_broken_links), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/download')
 def download_file():
