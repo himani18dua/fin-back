@@ -13,7 +13,7 @@ from scrapy.utils.project import get_project_settings
 
 app = Flask(__name__)
 
-CORS(app, resources={r"/*": {"origins": "https://frontend-react-31ahnhmpk-hds-projects-a2b29e6e.vercel.app/"}})
+CORS(app, resources={r"/*": {"origins": "https://frontend-react-wc.vercel.app//"}})
 @app.route('/crawl', methods=['POST'])
 @cross_origin()
 def crawl():
