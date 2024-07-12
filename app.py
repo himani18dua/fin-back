@@ -9,7 +9,7 @@ import subprocess
 
 app=Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "https://frontend-react-wc.vercel.app"}})
-@app.route('/members', methods=['GET'])
+@app.route('/crawl-members', methods=['GET'])
 def members():
     file_path = os.path.join('output_directory', 'broken_links.json')
     with open(file_path, 'r') as f:
