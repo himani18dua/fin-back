@@ -11,10 +11,14 @@ app=Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "https://frontend-react-wc.vercel.app"}})
 @app.route('/members', methods=['GET'])
 def members():
-    file_path = os.path.join('output_directory', 'broken_links.json')
+     file_path = os.path.join('output_directory', 'broken_links.json')
     with open(file_path, 'r') as f:
         broken_links = json.load(f)
-    return jsonify(broken_links)
+
+    # Limit to 5 broken links
+    limited_broken_links = broken_links[:5]
+
+    return jsonify(limited_broken_links)
 
 @app.route('/img-members', methods=['GET'])
 def img_members():
