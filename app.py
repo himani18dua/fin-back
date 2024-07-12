@@ -8,7 +8,13 @@ import subprocess
 
 
 app=Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://frontend-react-wc.vercel.app"}})
+CORS(app, resources={r"/crawl": {"origins": "frontend-react-wc.vercel.app"}})
+CORS(app, resources={r"/members": {"origins": "frontend-react-wc.vercel.app"}})
+CORS(app, resources={r"/download": {"origins": "frontend-react-wc.vercel.app"}})
+CORS(app, resources={r"/img-crawl": {"origins": "frontend-react-wc.vercel.app"}})
+CORS(app, resources={r"/img-members": {"origins": "frontend-react-wc.vercel.app"}})
+CORS(app, resources={r"/img-download": {"origins": "frontend-react-wc.vercel.app"}})
+
 @app.route('/members', methods=['GET'])
 def members():
     file_path = os.path.join('output_directory', 'broken_links.json')
