@@ -19,8 +19,8 @@ class FindBrokenSpider(scrapy.Spider):
         'DEFAULT_REQUEST_HEADERS': headers(),
         'ROBOTSTXT_OBEY': False,
         'RETRY_TIMES': 1,
-        'LOG_LEVEL': 'INFO',
-        'DOWNLOAD_DELAY': 2, # Adjust log level as needed
+        'LOG_LEVEL': 'INFO',  # Adjust log level as needed
+        'DOWNLOAD_DELAY': 2,  # Delay in seconds between each request
     }
     name = "crawler"
     handle_httpstatus_list = [i for i in range(400, 600)]
@@ -60,14 +60,7 @@ class FindBrokenSpider(scrapy.Spider):
     def parse(self, response):
         is_external = response.meta.get('is_external', False)
         source_page = response.meta.get('source', '')
-        # selector = Selector(response)
-
-# Find the link element using its URL
-        # link_element = selector.xpath(f"//a[@href='{response.url}']")
-
-# Extract the link text if the element is found
         link_text = response.meta.get('text')
-        
 
         if response.status in self.handle_httpstatus_list:
             self.log_broken_link(response.url, source_page, link_text, response.status, is_external)
@@ -105,7 +98,8 @@ class FindBrokenSpider(scrapy.Spider):
         self.logger.error(repr(failure))
         request = failure.request
         self.logger.error(f'Unhandled error on {request.url}')
-        self.log_broken_link(request.url, 'Unknown', None, failure.value.response.status if failure.value.response else 'DNSLookupError or other unhandled', False)
+        status = failure.value.response.status if failure.value.response else 'DNSLookupError or other unhandled'
+        self.log_broken_link(request.url, 'Unknown', None, status, False)
 
     def log_broken_link(self, url, source, text, status, is_external):
         item = {
