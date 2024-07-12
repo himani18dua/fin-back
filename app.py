@@ -46,7 +46,7 @@ def crawl():
         script_path = f'{script_directory}/{script_name}'
         command=['scrapy','runspider',script_path,'-a', f'url={url}']
         print("Command:", command)
-        subprocess.run(command,text=True)
+        subprocess.run(command,text=True,timeout=300)
         return jsonify({"message": "Crawling started"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
