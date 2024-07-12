@@ -47,7 +47,7 @@ def crawl():
         command=['scrapy','runspider',script_path,'-a', f'url={url}']
         print("Command:", command)
 
-        result = subprocess.run(command, text=True, capture_output=True, timeout=300)
+        result = subprocess.run(command, text=True, capture_output=True, timeout=600)
         print("Result:", result)
         if result.returncode != 0:
             return jsonify({"error": result.stderr}), 500
