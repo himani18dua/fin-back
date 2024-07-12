@@ -8,7 +8,7 @@ import subprocess
 
 
 app=Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://fin-back-odw1.onrender.com"}})
+CORS(app, resources={r"/*": {"origins": "https://frontend-react-wc.vercel.app"}})
 @app.route('/img-members', methods=['GET'])
 def img_members():
     file_path = os.path.join('output_directory', 'images_without_alt.json')
