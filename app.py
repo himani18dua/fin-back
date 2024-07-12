@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, send_file
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import json
@@ -8,7 +8,7 @@ import subprocess
 
 
 app=Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://frontend-react-wc.vercel.app"}})
+@cross_origin(origins="https://frontend-react-wc.vercel.app")
 @app.route('/img-members', methods=['GET'])
 def img_members():
     file_path = os.path.join('output_directory', 'images_without_alt.json')
