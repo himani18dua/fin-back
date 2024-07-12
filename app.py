@@ -15,7 +15,8 @@ def img_members():
     with open(file_path, 'r') as f:
         images_without_alt = json.load(f)
     return jsonify(images_without_alt)
-
+    
+CORS(app, resources={r"/*": {"origins": "https://frontend-react-wc.vercel.app"}})
 @app.route("/members", methods=['GET'])
 
 def members():
@@ -28,6 +29,7 @@ def members():
         broken_links = json.load(f)
 
     return broken_links
+    
 @app.route('/crawl',methods=['POST'])
 
 def crawl():
