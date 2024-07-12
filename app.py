@@ -9,6 +9,12 @@ import subprocess
 
 app=Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "https://frontend-react-wc.vercel.app"}})
+@app.route("/members", methods=['GET'])
+def members():
+    file_path = os.path.join('output_directory', 'broken_links.json')
+    with open(file_path, 'r') as f:
+        broken_links = json.load(f)
+    return jsonify(broken_links)
 
 @app.route('/img-members', methods=['GET'])
 def img_members():
@@ -17,12 +23,7 @@ def img_members():
         images_without_alt = json.load(f)
     return jsonify(images_without_alt)
     
-@app.route("/members", methods=['GET'])
-def members():
-    file_path = os.path.join('output_directory', 'broken_links.json')
-    with open(file_path, 'r') as f:
-        broken_links = json.load(f)
-    return jsonify(broken_links)
+
     
 @app.route('/crawl',methods=['POST'])
 def crawl():
