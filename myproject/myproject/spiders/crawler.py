@@ -20,7 +20,7 @@ class FindBrokenSpider(scrapy.Spider):
         'ROBOTSTXT_OBEY': False,
         'RETRY_TIMES': 1,
         'LOG_LEVEL': 'INFO',  # Adjust log level as needed
-        'DOWNLOAD_DELAY': 2,  # Delay in seconds between each request
+        
     }
     name = "crawler"
     handle_httpstatus_list = [i for i in range(400, 600)]
