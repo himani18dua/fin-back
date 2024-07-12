@@ -46,10 +46,18 @@ def crawl():
         script_path = f'{script_directory}/{script_name}'
         command=['scrapy','runspider',script_path,'-a', f'url={url}']
         print("Command:", command)
-        subprocess.run(command,text=True,timeout=300)
+
+        result = subprocess.run(command, text=True, capture_output=True, timeout=300)
+        print("Result:", result)
+        if result.returncode != 0:
+            return jsonify({"error": result.stderr}), 500
+
         return jsonify({"message": "Crawling started"}), 200
+    except subprocess.TimeoutExpired:
+        return jsonify({"error": "Crawl process timed out"}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+        
 
     output_file = 'myproject/output_directory/broken_links.json'
 
