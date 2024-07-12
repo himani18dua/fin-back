@@ -18,20 +18,13 @@ def img_members():
     
 CORS(app, resources={r"/*": {"origins": "https://frontend-react-wc.vercel.app"}})
 @app.route("/members", methods=['GET'])
-
 def members():
-    
-    print('hello')
     file_path = os.path.join('output_directory', 'broken_links.json')
-    print(file_path)
-
     with open(file_path, 'r') as f:
         broken_links = json.load(f)
-
-    return broken_links
+    return jsonify(broken_links)
     
 @app.route('/crawl',methods=['POST'])
-
 def crawl():
     try:
         data = request.get_json()
@@ -59,7 +52,6 @@ def crawl():
     output_file = 'myproject/output_directory/broken_links.json'
 
 @app.route('/img-crawl',methods=['POST'])
-
 def imgcrawl():
     try:
         data = request.get_json()
