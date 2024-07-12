@@ -7,10 +7,8 @@ import os
 import subprocess
 
 
-CORS(app, resources={r"/*": {"origins": "https://frontend-react-wc.vercel.app"}})  # Global CORS setup
-
-# CORS setup specifically for /members route
-cors = CORS(app, resources={r"/members": {"origins": "https://frontend-react-wc.vercel.app"}})
+app=Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "https://frontend-react-wc.vercel.app"}})
 
 @app.route('/members', methods=['GET'])
 def members():
