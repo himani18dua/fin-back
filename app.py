@@ -79,7 +79,7 @@ def imgcrawl():
         tasks[task_id] = {"state": "PENDING"}
 
         script_directory = 'myproject/myproject/spiders'
-        script_name = 'img-crawler.py'
+        script_name = 'imgcrawler.py'
         script_path = f'{script_directory}/{script_name}'
         command = ['scrapy', 'runspider', script_path, '-a', f'url={url}']
         subprocess.run(command, text=True)
