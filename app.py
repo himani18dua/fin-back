@@ -5,28 +5,45 @@ from reportlab.pdfgen import canvas
 import json
 import os
 import subprocess
+import uuid
 
+app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
-app=Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://frontend-react-wc.vercel.app"}})
+@app.errorhandler(Exception)
+def handle_exception(e):
+    response = e.get_response()
+    response.data = json.dumps({
+        "code": e.code,
+        "name": e.name,
+        "description": e.description,
+    })
+    response.content_type = "application/json"
+    return response
+
+tasks = {}
 
 @app.route('/members', methods=['GET'])
 def members():
-    file_path = os.path.join('output_directory', 'broken_links.json')
-    with open(file_path, 'r') as f:
-        broken_links = json.load(f)
-    return jsonify(broken_links)
+    try:
+        file_path = os.path.join('output_directory', 'broken_links.json')
+        with open(file_path, 'r') as f:
+            broken_links = json.load(f)
+        return jsonify(broken_links)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/img-members', methods=['GET'])
 def img_members():
-    file_path = os.path.join('output_directory', 'images_without_alt.json')
-    with open(file_path, 'r') as f:
-        images_without_alt = json.load(f)
-    return jsonify(images_without_alt)
-    
+    try:
+        file_path = os.path.join('output_directory', 'images_without_alt.json')
+        with open(file_path, 'r') as f:
+            images_without_alt = json.load(f)
+        return jsonify(images_without_alt)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    
-@app.route('/crawl',methods=['POST'])
+@app.route('/crawl', methods=['POST'])
 def crawl():
     try:
         data = request.get_json()
@@ -35,33 +52,21 @@ def crawl():
         if not url:
             return jsonify({"error": "URL is required"}), 400
 
-       
+        task_id = str(uuid.uuid4())
+        tasks[task_id] = {"state": "PENDING"}
 
-# output_dir = './flask-server/myproject/output_directory'
         script_directory = 'myproject/myproject/spiders'
-
         script_name = 'crawler.py'
-
-
         script_path = f'{script_directory}/{script_name}'
-        command=['scrapy','runspider',script_path,'-a', f'url={url}']
-        print("Command:", command)
+        command = ['scrapy', 'runspider', script_path, '-a', f'url={url}']
+        subprocess.run(command, text=True)
 
-        result = subprocess.run(command, text=True, capture_output=True, timeout=600)
-        print("Result:", result)
-        if result.returncode != 0:
-            return jsonify({"error": result.stderr}), 500
-
-        return jsonify({"message": "Crawling started"}), 200
-    except subprocess.TimeoutExpired:
-        return jsonify({"error": "Crawl process timed out"}), 500
+        tasks[task_id]["state"] = "SUCCESS"  # Or handle as per the actual state of the subprocess
+        return jsonify({"task_id": task_id}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-        
 
-    output_file = 'myproject/output_directory/broken_links.json'
-
-@app.route('/img-crawl',methods=['POST'])
+@app.route('/img-crawl', methods=['POST'])
 def imgcrawl():
     try:
         data = request.get_json()
@@ -70,90 +75,80 @@ def imgcrawl():
         if not url:
             return jsonify({"error": "URL is required"}), 400
 
-       
+        task_id = str(uuid.uuid4())
+        tasks[task_id] = {"state": "PENDING"}
 
-# output_dir = './flask-server/myproject/output_directory'
         script_directory = 'myproject/myproject/spiders'
-
         script_name = 'img-crawler.py'
-
-
         script_path = f'{script_directory}/{script_name}'
-        command=['scrapy','runspider',script_path,'-a', f'url={url}']
-        print("Command:", command)
-        subprocess.run(command,text=True)
-        return jsonify({"message": "Crawling started"}), 200
+        command = ['scrapy', 'runspider', script_path, '-a', f'url={url}']
+        subprocess.run(command, text=True)
+
+        tasks[task_id]["state"] = "SUCCESS"  # Or handle as per the actual state of the subprocess
+        return jsonify({"task_id": task_id}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-    output_file = 'myproject/output_directory/broken_links.json'   
+@app.route('/task-status/<task_id>', methods=['GET'])
+def task_status(task_id):
+    task = tasks.get(task_id)
+    if not task:
+        return jsonify({"error": "Task not found"}), 404
+    return jsonify(task)
 
 @app.route('/img-download')
 def download():
-    json_path = 'output_directory/images_without_alt.json'
-    pdf_path = 'output_directory/images_without_alt.pdf'
+    try:
+        json_path = 'output_directory/images_without_alt.json'
+        pdf_path = 'output_directory/images_without_alt.pdf'
 
-    # Load JSON data
-    with open(json_path, 'r') as f:
-        data = json.load(f)
+        with open(json_path, 'r') as f:
+            data = json.load(f)
 
-    # Create a PDF
-    from reportlab.lib.pagesizes import letter
-    from reportlab.pdfgen import canvas
-    c = canvas.Canvas(pdf_path, pagesize=letter)
-    width, height = letter
-    text = c.beginText(40, height - 40)
-    text.setFont("Helvetica", 10)
+        c = canvas.Canvas(pdf_path, pagesize=letter)
+        width, height = letter
+        text = c.beginText(40, height - 40)
+        text.setFont("Helvetica", 10)
 
-    # Convert JSON data to text
-    json_str = json.dumps(data, indent=4)
-    lines = json_str.split('\n')
+        json_str = json.dumps(data, indent=4)
+        lines = json_str.split('\n')
 
-    # Add text to PDF
-    for line in lines:
-        text.textLine(line)
+        for line in lines:
+            text.textLine(line)
 
-    c.drawText(text)
-    c.save()
+        c.drawText(text)
+        c.save()
 
-    # Send the PDF file as a response
-    return send_file(pdf_path, as_attachment=True)   
-    
-   
+        return send_file(pdf_path, as_attachment=True)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/download')
 def download_file():
-    # file_path = os.path.join('output_directory', 'broken_links.json')
-    # if os.path.exists(file_path):
-    #     return send_file(file_path, as_attachment=True)
-    # else:
-    #     return 'File not found', 404
-    json_path = 'output_directory/broken_links.json'
-    pdf_path = 'output_directory/broken_links.pdf'
+    try:
+        json_path = 'output_directory/broken_links.json'
+        pdf_path = 'output_directory/broken_links.pdf'
 
-    # Load JSON data
-    with open(json_path, 'r') as f:
-        data = json.load(f)
+        with open(json_path, 'r') as f:
+            data = json.load(f)
 
-    # Create a PDF
-    c = canvas.Canvas(pdf_path, pagesize=letter)
-    width, height = letter
-    text = c.beginText(40, height - 40)
-    text.setFont("Helvetica", 10)
+        c = canvas.Canvas(pdf_path, pagesize=letter)
+        width, height = letter
+        text = c.beginText(40, height - 40)
+        text.setFont("Helvetica", 10)
 
-    # Convert JSON data to text
-    json_str = json.dumps(data, indent=4)
-    lines = json_str.split('\n')
+        json_str = json.dumps(data, indent=4)
+        lines = json_str.split('\n')
 
-    # Add text to PDF
-    for line in lines:
-        text.textLine(line)
+        for line in lines:
+            text.textLine(line)
 
-    c.drawText(text)
-    c.save()
+        c.drawText(text)
+        c.save()
 
-    # Send the PDF file as a response
-    return send_file(pdf_path, as_attachment=True)
+        return send_file(pdf_path, as_attachment=True)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-if __name__=="__main__":
+if __name__ == "__main__":
     app.run(host='0.0.0.0')
